@@ -1,0 +1,582 @@
+
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarbonHero | Prek Leap Earth Club</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* បន្ថែមក្នុង <style> */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-green {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    100% { transform: scale(1); }
+}
+
+.animate-fade-in { animation: fadeInUp 0.6s ease-out forwards; }
+.btn-pulse:hover { animation: pulse-green 1.5s infinite; }
+
+/* ចលនាសម្រាប់រូបស្លឹកឈើលោត */
+.leaf-bounce:hover {
+    transform: rotate(15deg) translateY(-5px);
+    transition: all 0.3s ease;
+}
+        @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;700&display=swap');
+        body { font-family: 'Kantumruy Pro', sans-serif; scroll-behavior: smooth; }
+        .hero-bg { background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80'); background-size: cover; background-position: center; }
+        #map { height: 450px; width: 100%; border-radius: 20px; z-index: 10; }
+        .board { background: #1a2e26; color: #a3e635; border: 4px solid #5d4037; font-family: monospace; }
+        .mobile-menu { transition: transform 0.3s ease-in-out; transform: translateX(100%); }
+        .mobile-menu.active { transform: translateX(0); }
+        /* បន្ថែម Style សម្រាប់ Preview រូបភាព */
+        #img-preview { max-height: 150px; object-fit: cover; border-radius: 10px; display: none; margin-top: 10px; border: 2px solid #a3e635; }
+        /* Style សម្រាប់ Popup លើផែនទីឱ្យស្អាត */
+        .custom-popup img { border-radius: 8px; margin-top: 5px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <nav class="bg-emerald-900 text-white p-4 sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2 font-bold text-xl">
+                <i class="fas fa-seedling text-green-400"></i>
+                <span>CarbonHero/span>
+            </div>
+            
+            <div class="hidden md:flex gap-6 text-sm">
+                <a href="#about" class="hover:text-green-400">អំពីយើង</a>
+                <a href="#leaderboard" class="hover:text-green-400">តារាងកិត្តិយស</a>
+                <a href="#library" class="hover:text-green-400">បណ្ណាល័យ</a>
+                <a href="#contact" class="hover:text-green-400">ទាក់ទង</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <i class="fas fa-search cursor-pointer"></i>
+                <button onclick="toggleMenu()" class="md:hidden text-2xl"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobileMenu" class="fixed top-0 right-0 h-full w-64 bg-emerald-900 text-white z-[60] p-10 mobile-menu shadow-2xl">
+        <button onclick="toggleMenu()" class="absolute top-5 right-5 text-2xl">×</button>
+        <ul class="space-y-6 text-lg">
+            <li><a href="#about" onclick="toggleMenu()">អំពីយើង</a></li>
+            <li><a href="#calc" onclick="toggleMenu()">គណនា</a></li>
+            <li><a href="#leaderboard" onclick="toggleMenu()">តារាងកិត្តិយស</a></li>
+            <li><a href="#library" onclick="toggleMenu()">បណ្ណាល័យ</a></li>
+            <li><a href="#faq" onclick="toggleMenu()">សំណួរ-ចម្លើយ</a></li>
+        </ul>
+    </div>
+
+    <header class="hero-bg h-[60vh] flex flex-col items-center justify-center text-center text-white px-4">
+        <button onclick="toggleDarkMode()" class="fixed bottom-5 left-5 bg-gray-800 text-white p-3 rounded-full shadow-lg z-[1000]">
+    <i id="dark-icon" class="fas fa-moon"></i>
+</button>
+        <h1 class="text-4xl md:text-6xl font-bold mb-4">តោះចូលរួមវាស់កាបូន!</h1>
+        <p class="text-lg md:text-xl mb-8 max-w-2xl text-gray-200">ចូលរួមជាមួយក្លឹបផែនដី វិទ្យាល័យព្រែកលៀប ដើម្បីថែរក្សាបរិស្ថានតាមរយៈទិន្នន័យវិទ្យាសាស្ត្រ។</p>
+        <a href="#calc" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-10 rounded-full text-xl shadow-xl transform transition hover:scale-105">
+            គណនាកាបូនឥឡូវនេះ
+        </a>
+    </header>
+
+    <div class="container mx-auto -mt-10 px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-2xl shadow-xl text-center border-b-4 border-green-500">
+                <i class="fas fa-tree text-3xl text-green-500 mb-2"></i>
+                <h2 id="st-trees" class="text-3xl font-bold text-gray-800">0</h2>
+                <p class="text-gray-500 uppercase text-xs tracking-widest font-bold">ដើមឈើបានតេស្ត</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-xl text-center border-b-4 border-blue-500">
+                <i class="fas fa-cloud-showers-heavy text-3xl text-blue-500 mb-2"></i>
+                <h2 id="st-carbon" class="text-3xl font-bold text-gray-800">0.0</h2>
+                <p class="text-gray-500 uppercase text-xs tracking-widest font-bold">កាបូនបានជួយសង្គ្រោះ (Kg)</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-xl text-center border-b-4 border-orange-500">
+                <i class="fas fa-user-friends text-3xl text-orange-500 mb-2"></i>
+                <h2 id="st-users" class="text-3xl font-bold text-gray-800">0</h2>
+                <p class="text-gray-500 uppercase text-xs tracking-widest font-bold">សមាជិកចូលរួម</p>
+            </div>
+        </div>
+    </div>
+
+    <section class="container mx-auto py-16 px-4">
+        <h2 class="text-3xl font-bold text-center mb-8"><i class="fas fa-map-marked-alt text-green-600"></i> ផែនទីទីតាំងដើមឈើ</h2>
+        <div id="map"></div>
+    </section>
+
+    <section id="about" class="bg-white py-16">
+        <div class="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-3xl font-bold mb-6">ហេតុអ្វីត្រូវវាស់កាបូន?</h2>
+                <p class="text-gray-600 leading-relaxed mb-6">ការប្រែប្រួលអាកាសធាតុគឺជាបញ្ហាសកល។ ដើមឈើនីមួយៗក្នុងសហគមន៍យើងគឺជា "ម៉ាស៊ីនស្រូបជាតិពុល"។ ការវាស់កាបូនជួយឱ្យយើងដឹងពីតម្លៃពិតនៃធម្មជាតិ និងជំរុញឱ្យមានការដាំដុះបន្ថែម។</p>
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div class="p-4 bg-green-50 rounded-xl"><i class="fas fa-shield-halved text-green-600 text-2xl mb-2"></i><br><b>ការពារបរិស្ថាន</b></div>
+                    <div class="p-4 bg-green-50 rounded-xl"><i class="fas fa-graduation-cap text-green-600 text-2xl mb-2"></i><br><b>បណ្ដុះស្មារតី</b></div>
+                </div>
+            </div>
+            <div class="bg-emerald-800 p-8 rounded-3xl text-white">
+                <h3 class="text-2xl font-bold mb-4">អត្ថប្រយោជន៍ដែលអ្នកទទួលបាន</h3>
+                <ul class="space-y-4">
+                    <li><i class="fas fa-check-circle text-orange-400 mr-2"></i> ទទួលបានចំណេះដឹងផ្នែកបរិស្ថានវិទ្យា</li>
+                    <li><i class="fas fa-check-circle text-orange-400 mr-2"></i> វិញ្ញាបនបត្រឌីជីថល "Carbon Guardian"</li>
+                    <li><i class="fas fa-check-circle text-orange-400 mr-2"></i> ក្លាយជាសមាជិកក្លឹបផែនដី វិទ្យាល័យព្រែកលៀប</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="leaderboard" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-10">🏆 តារាងកិត្តិយស</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="font-bold border-b pb-4 mb-4 text-emerald-800">🥇 Top 5 អ្នកពូកែតេស្ត</h3>
+                    <table class="w-full text-left" id="leader-table">
+                        </table>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg text-center">
+                    <h3 class="font-bold border-b pb-4 mb-4 text-emerald-800">🔥 Daily Challenge</h3>
+                    <div class="py-10">
+                        <i class="fas fa-award text-5xl text-orange-500 mb-4"></i>
+                        <h4 id="today-winner" class="text-xl font-bold">កំពុងស្វែងរកអ្នកឈ្នះ...</h4>
+                        <p class="text-gray-400">អ្នកឈ្នះនឹងទទួលបាន Badge ពិសេស!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="calc" class="py-16">
+        <div class="container mx-auto px-4 max-w-5xl">
+            <div class="bg-white rounded-[40px] shadow-2xl overflow-hidden grid md:grid-cols-2">
+                <div id="report-area" class="p-8 board">
+                    <div class="flex items-center gap-4 mb-6">
+                        <img id="panda" src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Panda&backgroundColor=95d5b2" class="w-16 h-16 rounded-full bg-white p-1">
+                        <p id="panda-msg" class="text-sm font-bold">"សួស្ដី! ខ្ញុំ Panda បៃតង ត្រៀមខ្លួនគិតលេខ!"</p>
+                    </div>
+                    <img id="board-img-preview" class="w-full rounded-xl mb-4 hidden border-2 border-dashed border-green-400">
+                    <div id="calc-result" class="space-y-4">
+                        <p>// រង់ចាំការបញ្ចូលទិន្នន័យ...</p>
+                    </div>
+                    <button onclick="generatePDF()" class="mt-10 bg-blue-500 text-white px-4 py-2 rounded-lg text-xs uppercase font-bold"><i class="fas fa-file-pdf mr-2"></i> Export PDF</button>
+                </div>
+                
+                <div class="p-8">
+                    <h2 class="text-2xl font-bold mb-6 text-emerald-800">គណនាកាបូនក្នុងដើមឈើ</h2>
+                    <button onclick="getGPS()" class="w-full bg-red-500 text-white p-3 rounded-xl mb-6 font-bold text-sm hover:bg-red-600">
+                        <i class="fas fa-location-arrow mr-2"></i> បើកទីតាំង GPS (តម្រូវឱ្យចុច)
+                    </button>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">ឈ្មោះអ្នកប្រើប្រាស់</label>
+                            <input type="text" id="cust-name" class="w-full bg-gray-100 p-3 rounded-xl outline-none focus:ring-2 ring-green-400" placeholder="បញ្ចូលឈ្មោះ...">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">ឈ្មោះដើមឈើ</label>
+                            <input type="text" id="tree-name" class="w-full bg-gray-100 p-3 rounded-xl outline-none focus:ring-2 ring-green-400" placeholder="ឧ៖ ដើមបេង, ដើមគ្រញូង...">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">រូបភាពដើមឈើ (ករណីមាន)</label>
+                            <div class="flex items-center gap-2">
+                                <label class="cursor-pointer bg-blue-100 text-blue-600 px-4 py-3 rounded-xl flex-1 text-center font-bold text-sm hover:bg-blue-200">
+                                    <i class="fas fa-camera mr-2"></i> ថតរូប ឬ បញ្ចូលរូប
+                                    <input type="file" id="tree-image" accept="image/*" capture="environment" class="hidden" onchange="previewImage(this)">
+                                </label>
+                            </div>
+                            <img id="img-preview" alt="Preview">
+                        </div>
+<div class="grid grid-cols-2 gap-4">
+    <div>
+        <label class="text-xs font-bold text-gray-400 uppercase">រង្វង់ដើម C (cm)</label>
+        <input type="number" id="in-c" class="w-full bg-gray-100 p-3 rounded-xl outline-none focus:ring-2 ring-emerald-400" value="20">
+    </div>
+
+    <div>
+        <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-bold text-gray-400 uppercase">កម្ពស់ដើម H (m)</label>
+            <button type="button" onclick="openHeightTool()" class="text-[10px] bg-blue-100 text-blue-600 px-2 py-1 rounded-md font-bold hover:bg-blue-200 transition">
+                <i class="fas fa-calculator mr-1"></i> ជំនួយ
+            </button>
+        </div>
+        <input type="number" id="in-h" class="w-full bg-gray-100 p-3 rounded-xl outline-none focus:ring-2 ring-emerald-400" value="12">
+    </div>
+</div>
+<div id="heightModal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-[30px] overflow-hidden shadow-2xl transition-all">
+        <div class="bg-emerald-800 p-5 text-white flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-lg">ឧបករណ៍វាស់កម្ពស់</h3>
+                <p class="text-[10px] text-emerald-200">ជ្រើសរើសវិធីសាស្ត្រដែលអ្នកមាន</p>
+            </div>
+            <button onclick="closeHeightTool()" class="text-3xl leading-none">&times;</button>
+        </div>
+
+        <div class="flex bg-emerald-50 p-2 gap-1 overflow-x-auto border-b">
+            <button onclick="switchTab('tab-shadow')" class="tab-btn active bg-emerald-700 text-white px-3 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap shadow-md">១. ស្រមោល</button>
+            <button onclick="switchTab('tab-pencil')" class="tab-btn text-emerald-800 px-3 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap">២. ខ្មៅដៃ(៩០°)</button>
+            <button onclick="switchTab('tab-angle')" class="tab-btn text-emerald-800 px-3 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap">៣. មុំ៤៥°</button>
+            <button onclick="switchTab('tab-floor')" class="tab-btn text-emerald-800 px-3 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap">៤. ជាន់ផ្ទះ</button>
+            <button onclick="switchTab('tab-ar')" class="tab-btn text-emerald-800 px-3 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap">៥. ប្រើ App (AR)</button>
+        </div>
+        
+        <div class="p-6">
+            <div id="tab-shadow" class="tab-content block">
+                <h4 class="font-bold text-emerald-700 mb-2">វិធីប្រើស្រមោល</h4>
+                <p class="text-[11px] text-gray-500 mb-3 italic">រូបមន្ត៖ (កម្ពស់អ្នក × ស្រមោលឈើ) ÷ ស្រមោលអ្នក</p>
+                <div class="grid grid-cols-3 gap-2">
+                    <input type="number" id="your-h" placeholder="កម្ពស់អ្នក" class="p-2 border rounded-lg text-xs outline-none focus:border-emerald-500">
+                    <input type="number" id="tree-s" placeholder="ស្រមោលឈើ" class="p-2 border rounded-lg text-xs outline-none focus:border-emerald-500">
+                    <input type="number" id="your-s" placeholder="ស្រមោលអ្នក" class="p-2 border rounded-lg text-xs outline-none focus:border-emerald-500">
+                </div>
+            </div>
+
+            <div id="tab-pencil" class="tab-content hidden text-center">
+                <h4 class="font-bold text-emerald-700 mb-2">វិធីបង្វិលខ្មៅដៃ ៩០ ដឺក្រេ</h4>
+                <p class="text-[11px] text-gray-500 mb-3 italic">តម្រឹមខ្មៅដៃឱ្យចំកំពូលឈើ រួចបង្វិលដេក ៩០° ហើយវាស់ចម្ងាយដីពីគល់ឈើដល់ចំណុចខ្មៅដៃចង្អុល។</p>
+                <input type="number" id="pencil-dist" placeholder="ចម្ងាយដីពីគល់ឈើ (m)" class="w-full p-2 border rounded-lg text-xs outline-none">
+            </div>
+
+            <div id="tab-angle" class="tab-content hidden">
+                <h4 class="font-bold text-emerald-700 mb-2">វិធីមុំ ៤៥ ដឺក្រេ</h4>
+                <p class="text-[11px] text-gray-500 mb-3 italic">ដើរថយក្រោយរហូតមើលឃើញកំពូលឈើចំមុំ ៤៥° នៃក្រដាសបត់។</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="number" id="dist-away" placeholder="ចម្ងាយពីគល់ (m)" class="p-2 border rounded-lg text-xs outline-none">
+                    <input type="number" id="eye-height" placeholder="កម្ពស់ភ្នែក (m)" class="p-2 border rounded-lg text-xs outline-none">
+                </div>
+            </div>
+
+            <div id="tab-floor" class="tab-content hidden text-center">
+                <h4 class="font-bold text-emerald-700 mb-2">ប៉ាន់ស្មានតាមជាន់ផ្ទះ</h4>
+                <p class="text-[11px] text-gray-500 mb-3 italic">១ ជាន់អគារជាមធ្យមគឺ ៣.៥ ម៉ែត្រ។</p>
+                <input type="number" id="floor-count" placeholder="ចំនួនជាន់" class="w-full p-2 border rounded-lg text-xs outline-none">
+            </div>
+
+            <div id="tab-ar" class="tab-content hidden">
+                <h4 class="font-bold text-emerald-700 mb-2">ប្រើកម្មវិធីវាស់ក្នុងទូរស័ព្ទ (AR)</h4>
+                <div class="flex gap-2 mb-3">
+                    <a href="intent://arcore.google.com/measure/#Intent;scheme=https;package=com.google.tango.measure;end" class="flex-1 bg-gray-100 p-2 rounded-lg text-[10px] text-center font-bold border hover:bg-gray-200">Android (Google Measure)</a>
+                    <a href="apple-measure://" class="flex-1 bg-gray-100 p-2 rounded-lg text-[10px] text-center font-bold border hover:bg-gray-200">iOS (Apple Measure)</a>
+                </div>
+                <input type="number" id="ar-val" placeholder="បញ្ចូលកម្ពស់ដែល App បង្ហាញ (m)" class="w-full p-2 border rounded-lg text-xs outline-none">
+            </div>
+
+            <div class="mt-6 pt-5 border-t text-center">
+                <button onclick="calculateByTab()" class="w-full bg-emerald-100 text-emerald-700 py-2 rounded-xl text-xs font-bold hover:bg-emerald-200 transition mb-4">ចុចដើម្បីគណនា</button>
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest">កម្ពស់ដែលទទួលបាន</p>
+                <h2 id="temp-h" class="text-3xl font-bold text-emerald-600 my-1">0.00 m</h2>
+                <button onclick="applyHeight()" class="mt-3 w-full bg-emerald-700 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-emerald-800 transition active:scale-95 uppercase text-sm">យល់ព្រមប្រើកម្ពស់នេះ</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+
+<button onclick="runCalculation()" class="w-full mt-6 bg-emerald-700 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:bg-emerald-800 transform active:scale-95 transition">
+    គណនា និងរក្សាទុក 🚀
+</button>
+</div>
+</div>
+</div>
+    </section>
+    
+      <script>
+        function toggleDarkMode() {
+    const html = document.documentElement;
+    const icon = document.getElementById('dark-icon');
+    
+    if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        html.style.filter = "none"; // ឬកែពណ៌តាម class
+        icon.className = "fas fa-moon";
+    } else {
+        html.classList.add('dark');
+        // វិធីរហ័ស៖ ប្រើ filter ដើម្បីប្តូរពណ៌ទាំងមូល (តែរូបភាពនឹងខូចពណ៌បន្តិច)
+        // បើចង់ឱ្យស្អាត ត្រូវកែ background ក្នុង CSS dark mode
+        document.body.style.backgroundColor = "#1a1a1a";
+        icon.className = "fas fa-sun";
+    }
+}
+    // បើកផ្ទាំងជំនួយ
+    window.openHeightTool = () => {
+        document.getElementById('heightModal').classList.remove('hidden');
+        // Reset តម្លៃចាស់ៗក្នុង Modal (Optional)
+        document.getElementById('temp-h').innerText = "0.00 m";
+    };
+
+   // មុខងារប្តូរ Tabs ក្នុង Modal
+window.switchTab = (tabId) => {
+    // លាក់មាតិកាទាំងអស់
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.replace('block', 'hidden'));
+    // បង្ហាញមាតិកាដែលជ្រើសរើស
+    document.getElementById(tabId).classList.replace('hidden', 'block');
+    
+    // ប្តូរពណ៌ប៊ូតុង Tab
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-700', 'text-white', 'shadow-md');
+        btn.classList.add('text-emerald-800');
+    });
+    event.target.classList.add('bg-emerald-700', 'text-white', 'shadow-md');
+    event.target.classList.remove('text-emerald-800');
+};
+
+window.openHeightTool = () => document.getElementById('heightModal').classList.remove('hidden');
+window.closeHeightTool = () => document.getElementById('heightModal').classList.add('hidden');
+
+// មុខងារគណនាផ្អែកតាម Tab ដែលកំពុងបើក
+window.calculateByTab = () => {
+    let result = 0;
+    const activeTab = document.querySelector('.tab-content:not(.hidden)').id;
+
+    if (activeTab === 'tab-shadow') {
+        const yh = parseFloat(document.getElementById('your-h').value);
+        const ts = parseFloat(document.getElementById('tree-s').value);
+        const ys = parseFloat(document.getElementById('your-s').value);
+        if(yh && ts && ys) result = (yh * ts) / ys;
+    } 
+    else if (activeTab === 'tab-pencil') {
+        const pd = parseFloat(document.getElementById('pencil-dist').value);
+        if(pd) result = pd; // ចម្ងាយដីស្មើកម្ពស់ឈើ
+    } 
+    else if (activeTab === 'tab-angle') {
+        const d = parseFloat(document.getElementById('dist-away').value);
+        const eh = parseFloat(document.getElementById('eye-height').value);
+        if(d && eh) result = d + eh; // ចម្ងាយដើរថយ + កម្ពស់ភ្នែក
+    } 
+    else if (activeTab === 'tab-floor') {
+        const fc = parseFloat(document.getElementById('floor-count').value);
+        if(fc) result = fc * 3.5;
+    }
+    else if (activeTab === 'tab-ar') {
+        const ar = parseFloat(document.getElementById('ar-val').value);
+        if(ar) result = ar;
+    }
+
+    if(result > 0) {
+        document.getElementById('temp-h').innerText = result.toFixed(2) + " m";
+    } else {
+        alert("សូមបំពេញលេខឱ្យបានត្រឹមត្រូវ!");
+    }
+};
+
+window.applyHeight = () => {
+    const val = parseFloat(document.getElementById('temp-h').innerText);
+    if(val > 0) {
+        document.getElementById('in-h').value = val.toFixed(2);
+        closeHeightTool();
+    }
+};
+</script>                 
+    <section id="library" class="py-16 bg-emerald-950 text-white">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-end mb-10">
+                <h2 class="text-3xl font-bold">បណ្ណាល័យបៃតង 📚</h2>
+                <a href="#" class="text-green-400 font-bold">មើលទាំងអស់ -></a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-emerald-900 p-6 rounded-3xl hover:bg-emerald-800 cursor-pointer">
+                    <div class="bg-emerald-700 h-40 rounded-2xl mb-4 flex items-center justify-center text-5xl">📄</div>
+                    <h3 class="font-bold">មេរៀនស្ដីពី Carbon Cycle</h3>
+                    <p class="text-sm text-gray-400 mt-2">ស្វែងយល់ពីរបៀបដែលផែនដីគ្រប់គ្រងកាបូន។</p>
+                </div>
+                <div class="bg-emerald-900 p-6 rounded-3xl hover:bg-emerald-800 cursor-pointer">
+                    <div class="bg-emerald-700 h-40 rounded-2xl mb-4 flex items-center justify-center text-5xl">🎬</div>
+                    <h3 class="font-bold">វីដេអូសកម្មភាពក្លឹប</h3>
+                    <p class="text-sm text-gray-400 mt-2">ទិដ្ឋភាពនៃការវាស់កាបូនផ្ទាល់នៅសាលា។</p>
+                </div>
+                <div class="bg-emerald-900 p-6 rounded-3xl hover:bg-emerald-800 cursor-pointer">
+                    <div class="bg-emerald-700 h-40 rounded-2xl mb-4 flex items-center justify-center text-5xl">🌱</div>
+                    <h3 class="font-bold">ប្រភេទឈើកម្រ</h3>
+                    <p class="text-sm text-gray-400 mt-2">ស្វែងយល់ពីបេង គ្រញូង និងធ្នង់។</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact" class="bg-gray-900 text-gray-400 py-16">
+        <div class="container mx-auto px-4 grid md:grid-cols-3 gap-12 border-b border-gray-800 pb-12">
+            <div>
+                <h3 class="text-white font-bold text-xl mb-4">CarbonHero</h3>
+                <p class="text-sm">វេបសាយបង្កើតដោយក្រុមវាស់កាបូននៃក្លឹបផែនដី វិទ្យាល័យព្រែកលៀប ដើម្បីបណ្ដុះស្មារតីយុវជនស្រឡាញ់បរិស្ថាន។</p>
+            </div>
+            <div>
+                <h3 class="text-white font-bold text-lg mb-4">តំណភ្ជាប់</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#faq" class="hover:text-green-400">សំណួរ-ចម្លើយ</a></li>
+                    <li><a href="#" class="hover:text-green-400">ប្រវត្តិក្រុម</a></li>
+                    <li><a href="#" class="hover:text-green-400">រចនាសម្ព័ន្ធក្លឹប</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-white font-bold text-lg mb-4">តាមដានយើង</h3>
+                <div class="flex gap-4 text-2xl">
+                    <a href="#" class="hover:text-blue-500"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="hover:text-blue-400"><i class="fab fa-telegram"></i></a>
+                    <a href="#" class="hover:text-red-500"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <p class="text-center mt-10 text-xs uppercase tracking-widest">© 2026 Prek Leap Earth Club. All Rights Reserved.</p>
+    </footer>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+        
+        const supabase = createClient('https://zaopkzbnurmdhfecfaud.supabase.co', 'sb_publishable_SM0FsH5YrIkPUbXY45Uang_W8OJYCwx');
+
+        let userLat = 11.5564, userLng = 104.9282;
+        let base64Image = null; // សម្រាប់ផ្ទុករូបភាព
+
+        let map = L.map('map').setView([userLat, userLng], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        // Preview Image មុនពេលរក្សាទុក
+        window.previewImage = (input) => {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    base64Image = e.target.result;
+                    document.getElementById('img-preview').src = base64Image;
+                    document.getElementById('img-preview').style.display = 'block';
+                    // បង្ហាញក្នុង Board ផងដែរ
+                    document.getElementById('board-img-preview').src = base64Image;
+                    document.getElementById('board-img-preview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // ១. ទាញទិន្នន័យ GPS ស្វ័យប្រវត្តិ
+        window.getGPS = () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    userLat = pos.coords.latitude; userLng = pos.coords.longitude;
+                    map.setView([userLat, userLng], 15);
+                    L.marker([userLat, userLng]).addTo(map).bindPopup("ទីតាំងបច្ចុប្បន្នរបស់អ្នក").openPopup();
+                    console.log("GPS Updated:", userLat, userLng);
+                }, () => alert("សូមបើក GPS លើទូរស័ព្ទ!"));
+            }
+        };
+
+        // ២. គណនា និងរក្សាទុក (រក្សារូបមន្តតាមរូបភាពប្អូនផ្ញើមក)
+        window.runCalculation = async () => {
+            const name = document.getElementById('cust-name').value || "សមាជិក";
+            const tName = document.getElementById('tree-name').value || "មិនស្គាល់ឈ្មោះ";
+            const c = parseFloat(document.getElementById('in-c').value);
+            const h = parseFloat(document.getElementById('in-h').value);
+
+            if(!c || !h) return alert("សូមបញ្ចូលលេខ!");
+
+            // Formula (ដូចក្នុងរូបភាពទី១)
+            const d = (c / 100 / Math.PI).toFixed(4);
+            const bio = (0.25 * Math.pow(d, 2) * h).toFixed(4);
+            const carbon = (bio * 0.5).toFixed(4);
+            const co2 = (carbon * 3.67 * 1000).toFixed(2);
+
+            // Animation Nodding
+            const panda = document.getElementById('panda');
+            panda.classList.add('animate-bounce');
+            setTimeout(() => panda.classList.remove('animate-bounce'), 1000);
+
+            // Board Display
+            document.getElementById('calc-result').innerHTML = `
+                <div class="text-sm">
+                    <b class="text-green-400">ដើមឈើ៖ ${tName}</b> <br>
+                    1. រកអង្កត់ផ្ចិត d = ${c}cm / 100 / π = ${d} m <br>
+                    2. Biomass = 0.25 × ${d}² × ${h} = ${bio} t <br>
+                    3. Carbon (50%) = ${bio} × 0.5 = ${carbon} t <br>
+                    4. បំប្លែង CO2 = ${carbon} × 3.67 <br>
+                    --------------------------- <br>
+                    <b class="text-white text-lg">=> សរុប = ${co2} Kg</b> 🌳
+                </div>
+            `;
+
+            // Save to DB (កំណែទម្រង់តាមរូបភាពទី៣)
+            const { error } = await supabase.from('trees').insert([{
+                name_customer: name, 
+                tree_name: tName, 
+                image_url: base64Image, 
+                circum_cm: c, 
+                height_m: h, 
+                co2_kg: parseFloat(co2), 
+                lat: userLat, 
+                lng: userLng
+            }]);
+
+            if(!error) {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                loadData();
+                // Reset Image Preview after save
+                base64Image = null;
+                document.getElementById('img-preview').style.display = 'none';
+                document.getElementById('board-img-preview').style.display = 'none';
+            } else {
+                console.error(error);
+                alert("រក្សាទុកមិនជោគជ័យ! សូមពិនិត្យ Database ។");
+            }
+        };
+
+        // ៣. ទាញទិន្នន័យពី DB និងបង្ហាញលើផែនទី (កំណែទម្រង់តាមរូបភាពទី២)
+        async function loadData() {
+            const { data } = await supabase.from('trees').select('*').order('co2_kg', { ascending: false });
+            if(data) {
+                // Stats
+                document.getElementById('st-trees').innerText = data.length;
+                document.getElementById('st-carbon').innerText = data.reduce((s, r) => s + (r.co2_kg || 0), 0).toFixed(1);
+                document.getElementById('st-users').innerText = new Set(data.map(r => r.name_customer)).size;
+
+                // Leaderboard
+                document.getElementById('leader-table').innerHTML = data.slice(0, 5).map((r, i) => `
+                    <tr class="border-b">
+                        <td class="py-3 font-bold">#${i+1}</td>
+                        <td>${r.name_customer}</td>
+                        <td class="text-green-600 font-bold">${r.co2_kg} Kg</td>
+                    </tr>
+                `).join('');
+
+                // Map Markers (កំណែទម្រង់បង្ហាញរូបភាពក្នុង Popup ឱ្យដូចផែនទីពិត)
+                map.eachLayer((layer) => { if (layer instanceof L.Marker || layer instanceof L.Circle) map.removeLayer(layer); });
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map); // Redraw Map
+
+                data.forEach(r => {
+                    if(r.lat && r.lng) {
+                        const markerHtml = `
+                            <div class="custom-popup text-xs" style="width:150px">
+                                <b>${r.tree_name || 'ដើមឈើ'}</b><br>
+                                <span class="text-green-600 font-bold">កាបូន៖ ${r.co2_kg} Kg</span><br>
+                                <span class="text-gray-400">ដោយ៖ ${r.name_customer}</span>
+                                ${r.image_url ? `<img src="${r.image_url}" style="width:100%; height:80px; object-fit:cover" />` : ''}
+                            </div>
+                        `;
+                        L.marker([r.lat, r.lng]).addTo(map).bindPopup(markerHtml);
+                    }
+                });
+            }
+        }
+
+        window.toggleMenu = () => document.getElementById('mobileMenu').classList.toggle('active');
+        window.toggleTips = () => document.getElementById('tips').classList.toggle('hidden');
+        window.generatePDF = () => html2pdf().from(document.getElementById('report-area')).save('CarbonHero_Report.pdf');
+
+        loadData();
+    </script>
+</body>
+</html>
+
+
