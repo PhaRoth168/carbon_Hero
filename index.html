@@ -12,6 +12,21 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+       <script src="https://js.puter.com/v2/"></script>
+
+    <script>
+
+        puter.ai.chat("What are the major differences between renewable and non-renewable energy sources?", {
+
+            model: 'gemini-3.1-pro-preview'
+
+        }).then(response => {
+
+            puter.print(response);
+
+        });
+
+    </script>
 
     <style>
         /* បន្ថែមក្នុង <style> */
@@ -53,7 +68,7 @@
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2 font-bold text-xl">
                 <i class="fas fa-seedling text-green-400"></i>
-                <span>CarbonHero/span>
+                <span>CarbonHero</span>
             </div>
             
             <div class="hidden md:flex gap-6 text-sm">
@@ -381,7 +396,616 @@ window.applyHeight = () => {
         closeHeightTool();
     }
 };
-</script>                 
+</script>  
+          
+
+<section id="carbonDashboard" class="py-20 bg-[#050810] text-white font-sans transition-all duration-500 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4">
+        
+        <div class="text-center mb-16">
+            <div class="inline-block px-4 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold uppercase tracking-widest mb-4 animate-pulse">
+                System Active: v5.0
+            </div>
+            <h2 class="text-4xl md:text-6xl font-black mb-4 bg-gradient-to-r from-white via-green-400 to-gray-500 bg-clip-text text-transparent">
+                Carbon <span class="text-green-500 font-extrabold">Hero</span> Pro
+            </h2>
+            <p class="text-gray-400 max-w-2xl mx-auto font-light">វិភាគ និងគ្រប់គ្រងតុល្យភាពកាបូនរបស់អ្នក ជាមួយនឹងប្រព័ន្ធឌីជីថលឆ្លាតវៃ។</p>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-8">
+            
+            <div class="lg:col-span-7 space-y-6">
+                <div class="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative">
+                    <div class="flex justify-between items-center mb-10">
+                        <h3 class="text-xl font-bold flex items-center tracking-tight">
+                            <i class="fas fa-terminal mr-3 text-green-500"></i> SYSTEM INPUT
+                        </h3>
+                        <div class="px-4 py-2 bg-black/40 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-gray-500 block uppercase font-bold">Impact Score</span>
+                            <span id="impactScore" class="text-2xl font-black text-green-400">100</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 ml-2 uppercase">អគ្គិសនី (kWh/ខែ)</label>
+                            <input type="number" id="elec" placeholder="0" class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-green-500 focus:bg-white/10 transition-all text-xl font-semibold">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 ml-2 uppercase">ជិះឡាន (km/ខែ)</label>
+                            <input type="number" id="car" placeholder="0" class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-500 focus:bg-white/10 transition-all text-xl font-semibold">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 ml-2 uppercase">ជិះម៉ូតូ (km/ខែ)</label>
+                            <input type="number" id="motor" placeholder="0" class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-cyan-500 focus:bg-white/10 transition-all text-xl font-semibold">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-500 ml-2 uppercase">សម្រាម (kg/សប្តាហ៍)</label>
+                            <input type="number" id="waste" placeholder="0" class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-orange-500 focus:bg-white/10 transition-all text-xl font-semibold">
+                        </div>
+                    </div>
+
+                    <div class="mt-10 flex gap-4">
+                        <button onclick="calculateAll()" class="flex-[3] bg-green-500 hover:bg-green-400 text-black font-black py-5 rounded-2xl transition-all transform active:scale-95 shadow-[0_0_30px_rgba(34,197,94,0.2)] uppercase tracking-tighter">
+                            Analyze Impact <i class="fas fa-satellite-dish ml-2"></i>
+                        </button>
+                        <button onclick="restartDashboard()" class="flex-1 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-500 py-5 rounded-2xl transition-all group" title="Restart System">
+                            <i class="fas fa-power-off group-hover:rotate-90 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white/5 border border-white/10 rounded-[2rem] p-8 flex flex-col items-center justify-center relative overflow-hidden group">
+                        <div id="treeContainer" class="text-7xl mb-4 transition-all duration-1000 z-10">🌳</div>
+                        <p id="treeStatus" class="text-green-400 font-bold text-xs uppercase tracking-widest z-10">System Balanced</p>
+                        <div class="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-[2rem] p-8 flex flex-col justify-center">
+                        <h4 class="text-[10px] font-bold text-gray-500 mb-4 uppercase tracking-[0.2em]">Smart Recommendation</h4>
+                        <p id="smartTip" class="text-sm text-gray-300 italic leading-relaxed font-light">"រង់ចាំការវិភាគទិន្នន័យ ដើម្បីទទួលបានគន្លឹះឆ្លាតវៃ..."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 space-y-6">
+                <div class="bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-10 h-full flex flex-col relative overflow-hidden">
+                    <div class="mb-12">
+                        <h3 class="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-4">Live Analytics</h3>
+                        <div class="flex items-baseline gap-2">
+                            <div id="resultContainer" class="text-7xl font-black text-white tracking-tighter">0.00</div>
+                            <span class="text-green-500 font-bold text-sm uppercase">kg CO₂</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow flex items-center justify-center py-6 border-y border-white/5 relative">
+                         <canvas id="carbonChart"></canvas>
+                         <div class="absolute flex flex-col items-center">
+                            <i class="fas fa-fingerprint text-white/10 text-4xl mb-2"></i>
+                         </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 my-10">
+                        <div id="badge1" class="bg-white/5 rounded-2xl p-4 text-center border border-white/5 grayscale opacity-20 transition-all duration-700">
+                            <i class="fas fa-shield-virus text-green-500 mb-2"></i>
+                            <p class="text-[8px] font-black uppercase">Eco Guard</p>
+                        </div>
+                        <div id="badge2" class="bg-white/5 rounded-2xl p-4 text-center border border-white/5 grayscale opacity-20 transition-all duration-700">
+                            <i class="fas fa-shuttle-space text-blue-400 mb-2"></i>
+                            <p class="text-[8px] font-black uppercase">Carbon Pilot</p>
+                        </div>
+                        <div id="badge3" class="bg-white/5 rounded-2xl p-4 text-center border border-white/5 grayscale opacity-20 transition-all duration-700">
+                            <i class="fas fa-atom text-yellow-500 mb-2"></i>
+                            <p class="text-[8px] font-black uppercase">Earth Hero</p>
+                        </div>
+                    </div>
+
+                    <button class="w-full bg-white text-black font-black py-4 rounded-xl text-xs uppercase tracking-widest hover:bg-gray-200 transition-colors">
+                        Export Digital Report <i class="fas fa-file-export ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<script>
+    let myChart;
+
+    function initChart() {
+        const ctx = document.getElementById('carbonChart').getContext('2d');
+        myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Electricity', 'Car', 'Motor', 'Waste'],
+                datasets: [{
+                    data: [1, 1, 1, 1],
+                    backgroundColor: ['#22c55e', '#3b82f6', '#06b6d4', '#f59e0b'],
+                    borderWidth: 0,
+                    hoverOffset: 20
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                cutout: '88%',
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    function calculateAll() {
+        const fElec = 0.5, fCar = 0.2, fMotor = 0.1, fWaste = 1.6;
+        const e = parseFloat(document.getElementById('elec').value) || 0;
+        const c = parseFloat(document.getElementById('car').value) || 0;
+        const m = parseFloat(document.getElementById('motor').value) || 0;
+        const w = parseFloat(document.getElementById('waste').value) || 0;
+
+        const vElec = e * fElec;
+        const vCar = c * fCar;
+        const vMotor = m * fMotor;
+        const vWaste = w * fWaste;
+        const total = vElec + vCar + vMotor + vWaste;
+
+        // Update Score (Max 100)
+        let score = 100 - (total / 15);
+        score = Math.max(0, Math.min(100, score));
+
+        animateValue("resultContainer", 0, total, 1000);
+        animateValue("impactScore", 100, score, 1000);
+        
+        myChart.data.datasets[0].data = [vElec, vCar, vMotor, vWaste];
+        myChart.update();
+
+        updateVisuals(total);
+    }
+
+    function updateVisuals(total) {
+        const tree = document.getElementById('treeContainer');
+        const status = document.getElementById('treeStatus');
+        const tip = document.getElementById('smartTip');
+        const b1 = document.getElementById('badge1'), b2 = document.getElementById('badge2'), b3 = document.getElementById('badge3');
+
+        if (total === 0) {
+            tree.innerHTML = "🌳"; status.innerText = "System Balanced";
+        } else if (total < 150) {
+            tree.innerHTML = "🌸"; status.innerText = "Eco Harmony Mode";
+            tip.innerText = "អស្ចារ្យ! ការបញ្ចេញកាបូនរបស់អ្នកទាបខ្លាំង។ អ្នកកំពុងក្លាយជាគំរូសម្រាប់ពិភពលោក។";
+            [b1, b2, b3].forEach(b => b.classList.remove('grayscale', 'opacity-20'));
+        } else if (total < 400) {
+            tree.innerHTML = "🌳"; status.innerText = "Standard Load";
+            tip.innerText = "ល្អ! សាកល្បងកាត់បន្ថយការប្រើប្រាស់អគ្គិសនីបន្ថែម ដើម្បីទទួលបានពិន្ទុពេញ។";
+            [b1, b2].forEach(b => b.classList.remove('grayscale', 'opacity-20'));
+        } else {
+            tree.innerHTML = "🍂"; status.innerText = "Critical Warning"; status.className = "text-red-500 font-bold text-xs uppercase tracking-widest";
+            tip.innerText = "ប្រយ័ត្ន! លទ្ធផលខ្ពស់ពេកហើយ។ អ្នកគួរកាត់បន្ថយការជិះឡាន និងកែច្នៃសម្រាមឡើងវិញ។";
+            b1.classList.remove('grayscale', 'opacity-20');
+        }
+    }
+
+    function animateValue(id, start, end, duration) {
+        const obj = document.getElementById(id);
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = (progress * (end - start) + start).toFixed(id === "impactScore" ? 0 : 2);
+            if (progress < 1) window.requestAnimationFrame(step);
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    function restartDashboard() {
+        const section = document.getElementById('carbonDashboard');
+        section.classList.add('brightness-150', 'opacity-50');
+        
+        setTimeout(() => {
+            document.querySelectorAll('input').forEach(input => input.value = '');
+            document.getElementById('resultContainer').innerText = '0.00';
+            document.getElementById('impactScore').innerText = '100';
+            document.getElementById('treeContainer').innerHTML = "🌳";
+            document.getElementById('treeStatus').innerText = "System Rebooted";
+            document.getElementById('treeStatus').className = "text-green-400 font-bold text-xs uppercase tracking-widest";
+            document.getElementById('smartTip').innerText = '"រង់ចាំការវិភាគទិន្នន័យ ដើម្បីទទួលបានគន្លឹះឆ្លាតវៃ..."';
+            
+            myChart.data.datasets[0].data = [1, 1, 1, 1];
+            myChart.update();
+            
+            document.querySelectorAll('[id^="badge"]').forEach(b => b.classList.add('grayscale', 'opacity-20'));
+            
+            section.classList.remove('brightness-150', 'opacity-50');
+        }, 600);
+    }
+
+    window.onload = initChart;
+</script>
+
+<style>
+    /* Premium Digital Style */
+    input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    canvas { width: 100% !important; height: 100% !important; }
+    #treeContainer { filter: drop-shadow(0 0 20px rgba(34, 197, 94, 0.3)); transition: transform 0.5s ease; }
+    #treeContainer:hover { transform: scale(1.2) rotate(10deg); }
+</style>
+<style>
+    /* Custom Scrollbar for better UI */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #22c55e; }
+    
+    @keyframes pulse-custom {
+        0% { transform: scale(0.95); opacity: 0.5; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+        100% { transform: scale(0.95); opacity: 0.5; }
+    }
+</style>  
+<section class="py-16 bg-[#020617] text-white font-sans overflow-hidden">
+    <div class="max-w-4xl mx-auto px-6">
+        
+        <div id="captureArea" class="glass rounded-[3rem] p-8 md:p-12 border border-cyan-500/30 bg-[#050b1d] shadow-[0_0_60px_rgba(6,182,212,0.15)] relative">
+            
+            <div class="flex flex-col md:flex-row justify-between items-start mb-10 gap-6 border-b border-white/5 pb-8">
+                <div>
+                    <h2 class="text-3xl font-black tracking-tighter bg-gradient-to-r from-cyan-400 via-blue-500 to-green-400 bg-clip-text text-transparent italic uppercase">
+                        Eco-Balance Simulator
+                    </h2>
+                    <p class="text-slate-500 text-xs font-mono tracking-widest uppercase mt-2">
+                        ប្រព័ន្ធវាស់ស្ទង់តុល្យភាពបរិយាកាស • FINAL VERSION
+                    </p>
+                </div>
+                <div class="flex gap-2">
+                    <div class="w-3 h-3 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_10px_#06b6d4]"></div>
+                    <div class="w-3 h-3 rounded-full bg-blue-500 animate-pulse delay-75 shadow-[0_0_10px_#3b82f6]"></div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-5 mb-10 no-print">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">Tree Capacity / សមត្ថភាពស្រូប </label>
+                    <input type="number" id="treePowerInput" value="22.39" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none focus:border-cyan-500 transition-all text-xl font-bold text-cyan-400">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">Humans / ចំនួនមនុស្ស</label>
+                    <input type="number" id="peopleInput" value="1" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none focus:border-blue-500 transition-all text-xl font-bold">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 italic">Time Range / រយៈពេលគិត</label>
+                    <select id="timeRange" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none focus:border-green-500 transition-all cursor-pointer font-bold appearance-none text-sm uppercase">
+                        <option value="1">Daily (១ ថ្ងៃ)</option>
+                        <option value="7">Weekly (១ សប្តាហ៍)</option>
+                        <option value="30">Monthly (១ ខែ)</option>
+                        <option value="365">Yearly (១ ឆ្នាំ)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 mb-12 no-print">
+                <button onclick="calculateFinal()" class="flex-[2] bg-gradient-to-r from-cyan-600 to-blue-600 hover:scale-[1.02] text-white font-black py-5 rounded-2xl transition-all shadow-lg uppercase tracking-widest text-sm active:scale-95">
+                    Execute Analysis <i class="fas fa-bolt ml-2"></i>
+                </button>
+                <button onclick="downloadReport()" class="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-5 rounded-2xl transition-all flex items-center justify-center gap-2 text-sm uppercase">
+                    <i class="fas fa-camera"></i> Save
+                </button>
+            </div>
+
+            <div id="resultDisplay" class="hidden space-y-8 animate-fade-in">
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-green-500/5 p-6 rounded-3xl border border-green-500/20 text-center">
+                        <p class="text-[10px] text-green-500 uppercase font-bold mb-2 tracking-widest italic">Total Absorption / ស្រូបសរុប</p>
+                        <h4 id="totalIn" class="text-2xl md:text-3xl font-black text-green-400">0.00 kg</h4>
+                    </div>
+                    <div class="bg-red-500/5 p-6 rounded-3xl border border-red-500/20 text-center">
+                        <p class="text-[10px] text-red-500 uppercase font-bold mb-2 tracking-widest italic">Total Emission / បញ្ចេញសរុប</p>
+                        <h4 id="totalOut" class="text-2xl md:text-3xl font-black text-red-500">0.00 kg</h4>
+                    </div>
+                    <div id="balanceContainer" class="p-6 rounded-3xl border text-center transition-all duration-500">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold mb-2 tracking-widest italic">Balance / តុល្យភាព</p>
+                        <h4 id="finalBalance" class="text-2xl md:text-3xl font-black">0.00 kg</h4>
+                    </div>
+                </div>
+
+                <div id="impactMessage" class="relative p-8 rounded-[3rem] bg-white/5 border border-white/10 overflow-hidden">
+                    <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                        <div class="w-32 h-32 bg-white/10 rounded-full flex items-center justify-center text-6xl animate-bounce-slow" id="pandaIcon">
+                            🐼
+                        </div>
+                        <div class="text-center md:text-left flex-1">
+                            <h3 id="impactTitle" class="text-xl font-black mb-2 italic uppercase"></h3>
+                            <p id="impactDetail" class="text-slate-300 text-sm leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="py-16 bg-[#f8fafc] font-sans">
+    <div class="max-w-2xl mx-auto px-6">
+        
+        <div class="bg-white rounded-[3rem] shadow-[0_25px_60px_rgba(0,0,0,0.08)] overflow-hidden border border-gray-100">
+            
+            <div class="pt-12 pb-8 flex flex-col items-center">
+                <div class="relative">
+                    <div class="w-28 h-28 bg-[#ecfdf5] rounded-full flex items-center justify-center border-4 border-white shadow-md">
+                        <span class="text-6xl animate-bounce-slow">🐼</span>
+                    </div>
+                    <div class="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-4 border-white rounded-full">
+                        <span class="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75"></span>
+                    </div>
+                </div>
+                <h2 class="mt-4 text-2xl font-black text-gray-800 tracking-tight">Panda AI Assistant</h2>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <p class="text-gray-400 text-[10px] font-bold uppercase tracking-[0.2em]">Ultra-Fast Gemini 1.5 Flash</p>
+                </div>
+            </div>
+
+            <div id="chatBody" class="px-8 py-4 h-[350px] overflow-y-auto space-y-4 bg-gray-50/50">
+                <div class="flex justify-start">
+                    <div class="bg-white border border-gray-100 text-gray-700 px-5 py-3 rounded-2xl rounded-tl-none shadow-sm max-w-[85%] text-sm">
+                        សួស្តី! ខ្ញុំគឺ **Panda AI**។ តើអ្នកមានសំណួរអ្វីចង់សួរខ្ញុំអំពីបរិស្ថានដែរឬទេ? ខ្ញុំនឹងឆ្លើយតបអ្នកភ្លាមៗ!
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-8 py-6 grid grid-cols-1 gap-3 bg-white">
+                <button onclick="quickAsk('តើដើមឈើជួយអ្វីខ្លះដល់ភពផែនដី?')" class="w-full text-left bg-white border border-gray-100 hover:border-green-500 hover:bg-green-50 px-6 py-4 rounded-2xl text-sm text-gray-700 transition-all flex justify-between items-center group shadow-sm">
+                    <span class="font-medium tracking-tight text-gray-600">🌳 តើដើមឈើជួយអ្វីខ្លះដល់ភពផែនដី?</span>
+                    <i class="fas fa-chevron-right text-gray-300 group-hover:text-green-500 transition-colors"></i>
+                </button>
+                <button onclick="quickAsk('តើធ្វើដូចម្តេចដើម្បីឱ្យបរិយាកាសស្អាត?')" class="w-full text-left bg-white border border-gray-100 hover:border-green-500 hover:bg-green-50 px-6 py-4 rounded-2xl text-sm text-gray-700 transition-all flex justify-between items-center group shadow-sm">
+                    <span class="font-medium tracking-tight text-gray-600">✨ តើធ្វើដូចម្តេចដើម្បីឱ្យបរិយាកាសស្អាត?</span>
+                    <i class="fas fa-chevron-right text-gray-300 group-hover:text-green-500 transition-colors"></i>
+                </button>
+            </div>
+
+            <div class="px-8 pb-10 bg-white">
+                <div class="relative flex items-center">
+                    <input type="text" id="aiInput" placeholder="សរសេរសំណួររបស់អ្នកនៅទីនេះ..." 
+                        class="w-full bg-gray-100 border-none rounded-2xl px-6 py-4 text-sm outline-none focus:ring-2 focus:ring-green-500/20 transition-all">
+                    <button onclick="sendToPandaAI()" class="absolute right-2.5 bg-green-500 hover:bg-green-600 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-md active:scale-90">
+                        <i class="fas fa-paper-plane text-[12px]"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://js.puter.com/v2/"></script>
+
+<style>
+    @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .animate-bounce-slow { animation: bounce-slow 3s infinite ease-in-out; }
+    #chatBody::-webkit-scrollbar { width: 4px; }
+    #chatBody::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+</style>
+
+<script>
+    async function sendToPandaAI(customMsg = null) {
+        const inputField = document.getElementById('aiInput');
+        const chatBody = document.getElementById('chatBody');
+        const userMessage = customMsg || inputField.value.trim();
+
+        if (!userMessage) return;
+
+        // បង្ហាញសារអ្នកប្រើប្រាស់
+        chatBody.innerHTML += `
+            <div class="flex justify-end mb-4">
+                <div class="bg-green-500 text-white px-5 py-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-md text-sm">
+                    ${userMessage}
+                </div>
+            </div>`;
+        
+        inputField.value = "";
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        // បង្ហាញ Loading
+        const typingId = "typing-" + Date.now();
+        chatBody.innerHTML += `
+            <div id="${typingId}" class="flex justify-start mb-4">
+                <div class="bg-white border border-gray-100 text-green-600 px-5 py-2 rounded-2xl rounded-tl-none text-[11px] font-bold italic animate-pulse">
+                    Panda AI កំពុងគិតយ៉ាងលឿន...
+                </div>
+            </div>`;
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        try {
+            // កំណត់ឱ្យប្រើ Gemini 1.5 Flash តាមរយៈ Puter
+            puter.ai.chat("You are Panda AI, a super-fast environmental expert. Always answer in Khmer. Use emojis. Question: " + userMessage, { 
+                model: 'gemini-1.5-flash',
+                stream: false 
+            }).then(response => {
+                const typingElem = document.getElementById(typingId);
+                if (typingElem) typingElem.remove();
+
+                // បង្ហាញចម្លើយពី AI
+                chatBody.innerHTML += `
+                    <div class="flex justify-start mb-4">
+                        <div class="bg-white border-l-4 border-l-green-500 border border-gray-100 text-gray-700 px-5 py-3 rounded-2xl rounded-tl-none max-w-[88%] shadow-sm text-sm leading-relaxed">
+                            ${response}
+                        </div>
+                    </div>`;
+                chatBody.scrollTop = chatBody.scrollHeight;
+            });
+
+        } catch (error) {
+            document.getElementById(typingId).innerText = "សុំទោស មានកំហុសបច្ចេកទេស!";
+        }
+    }
+
+    function quickAsk(text) { sendToPandaAI(text); }
+
+    document.getElementById('aiInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendToPandaAI();
+    });
+</script>
+
+<script>
+    // អនុគមន៍បញ្ជូនសំណួរទៅកាន់ Gemini តាមរយៈ Puter.js
+    async function sendToPandaAI(customMsg = null) {
+        const inputField = document.getElementById('aiInput');
+        const chatBody = document.getElementById('chatBody');
+        const userMessage = customMsg || inputField.value.trim();
+
+        if (!userMessage) return;
+
+        // បង្ហាញសាររបស់អ្នកប្រើ
+        chatBody.innerHTML += `
+            <div class="flex justify-end mb-5 animate-in">
+                <div class="bg-green-500 text-white px-5 py-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-md text-sm font-medium">
+                    ${userMessage}
+                </div>
+            </div>`;
+        
+        inputField.value = "";
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        // បង្ហាញ Loading Status
+        const typingId = "typing-" + Date.now();
+        chatBody.innerHTML += `
+            <div id="${typingId}" class="flex justify-start mb-5 animate-in">
+                <div class="bg-white border border-gray-100 text-green-500 px-5 py-2 rounded-2xl rounded-tl-none text-[11px] font-black italic flex items-center gap-2 shadow-sm">
+                    <i class="fas fa-magic-wand-sparkles animate-spin"></i> Gemini កំពុងឆ្លើយតបយ៉ាងរហ័ស...
+                </div>
+            </div>`;
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        try {
+            // កំណត់ឱ្យវាឆ្លើយតបជាភាសាខ្មែរ និងមានលក្ខណៈរួសរាយ
+            const systemContext = "You are Panda AI, a helpful environmental expert. Always answer in Khmer with friendly emojis. Keep answers clear and concise. User asks: ";
+            
+            // ហៅប្រើ Puter AI ជាមួយ Gemini 1.5 Flash (Model លឿនបំផុត)
+            puter.ai.chat(systemContext + userMessage, { 
+                model: 'gemini-1.5-flash',
+                stream: false 
+            }).then(response => {
+                const typingElem = document.getElementById(typingId);
+                if (typingElem) typingElem.remove();
+
+                // បង្ហាញចម្លើយ AI
+                chatBody.innerHTML += `
+                    <div class="flex justify-start mb-5 animate-in">
+                        <div class="bg-white border-l-4 border-l-green-500 border border-gray-100 text-gray-700 px-5 py-4 rounded-2xl rounded-tl-none max-w-[88%] shadow-sm text-sm leading-relaxed">
+                            ${response}
+                        </div>
+                    </div>`;
+                chatBody.scrollTop = chatBody.scrollHeight;
+            });
+
+        } catch (error) {
+            const typingElem = document.getElementById(typingId);
+            if (typingElem) typingElem.innerText = "សុំទោស មានកំហុសបច្ចេកទេស!";
+            console.error(error);
+        }
+    }
+
+    function quickAsk(text) { sendToPandaAI(text); }
+
+    // ចាប់យកប៊ូតុង Enter
+    document.getElementById('aiInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendToPandaAI();
+    });
+</script>
+
+<style>
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .animate-float { animation: float 4s infinite ease-in-out; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-in { animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+    #chatBody::-webkit-scrollbar { width: 4px; }
+    #chatBody::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    #chatBody::-webkit-scrollbar-track { background: transparent; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<script>
+function calculateFinal() {
+    // ១. ទាញយកតម្លៃ (Input Values)
+    const treePower = parseFloat(document.getElementById('treePowerInput').value) || 0; 
+    const people = parseFloat(document.getElementById('peopleInput').value) || 0;
+    const days = parseInt(document.getElementById('timeRange').value);
+
+    // ២. ការគណនា (Logic)
+    // ស្រូបសរុប = សមត្ថភាពក្នុង ១ ថ្ងៃ x ចំនួនថ្ងៃ
+    const totalAbsorb = treePower * days; 
+    // បញ្ចេញសរុប = (ចំនួនមនុស្ស x ០.៩ គីឡូ) x ចំនួនថ្ងៃ
+    const totalRelease = (people * 0.9) * days; 
+    // តុល្យភាព
+    const balance = totalAbsorb - totalRelease;
+
+    // ៣. បង្ហាញលទ្ធផល (Display with Formatting)
+    document.getElementById('resultDisplay').classList.remove('hidden');
+    
+    // បង្ហាញលេខខ្ទង់ពាន់ដោយមានសញ្ញាក្បៀស (toLocaleString)
+    document.getElementById('totalIn').innerText = totalAbsorb.toLocaleString('en-US', {minimumFractionDigits: 2}) + " kg";
+    document.getElementById('totalOut').innerText = totalRelease.toLocaleString('en-US', {minimumFractionDigits: 2}) + " kg";
+    
+    const balElement = document.getElementById('finalBalance');
+    balElement.innerText = (balance > 0 ? "+" : "") + balance.toLocaleString('en-US', {minimumFractionDigits: 2}) + " kg";
+
+    updateFinalUI(balance, days);
+}
+
+function updateFinalUI(balance, days) {
+    const title = document.getElementById('impactTitle');
+    const detail = document.getElementById('impactDetail');
+    const container = document.getElementById('balanceContainer');
+    const balText = document.getElementById('finalBalance');
+    const panda = document.getElementById('pandaIcon');
+
+    let timeText = days === 1 ? "១ ថ្ងៃ" : days === 7 ? "១ សប្តាហ៍" : days === 30 ? "១ ខែ" : "១ ឆ្នាំ";
+
+    if (balance < 0) {
+        container.className = "p-6 rounded-3xl border border-red-500 bg-red-500/10 text-center shadow-[0_0_20px_rgba(239,68,68,0.2)]";
+        balText.className = "text-2xl md:text-3xl font-black text-red-500";
+        panda.innerText = "🌋";
+        title.innerText = "បរិយាកាសមានគ្រោះថ្នាក់";
+        title.className = "text-xl font-black mb-2 italic uppercase text-red-500";
+        detail.innerHTML = `ក្នុងរយៈពេល <b>${timeText}</b> ការបញ្ចេញកាបូនលើសការស្រូបយកចំនួន <b>${Math.abs(balance).toLocaleString()} kg</b>។ ស្រទាប់អូហ្សូនកំពុងរងការគំរាមកំហែង!`;
+    } else {
+        container.className = "p-6 rounded-3xl border border-green-500 bg-green-500/10 text-center shadow-[0_0_20px_rgba(34,197,94,0.2)]";
+        balText.className = "text-2xl md:text-3xl font-black text-green-400";
+        panda.innerText = "🐼";
+        title.innerText = "បរិយាកាសមានសុវត្ថិភាព";
+        title.className = "text-xl font-black mb-2 italic uppercase text-green-400";
+        detail.innerHTML = `អបអរសាទរ! ក្នុងរយៈពេល <b>${timeText}</b> នេះ សមត្ថភាពស្រូបកាបូនមានតុល្យភាពល្អណាស់ ដែលជួយឱ្យបរិយាកាសត្រជាក់ និងមានសុវត្ថិភាព។`;
+    }
+}
+
+function downloadReport() {
+    const area = document.getElementById('captureArea');
+    const btns = document.querySelectorAll('.no-print');
+    btns.forEach(b => b.style.opacity = '0');
+
+    html2canvas(area, { backgroundColor: '#020617', scale: 2 }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'Eco-Balance-Report.png';
+        link.href = canvas.toDataURL();
+        link.click();
+        btns.forEach(b => b.style.opacity = '1');
+    });
+}
+</script>
+
+<style>
+    .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); }
+    .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+    .animate-bounce-slow { animation: bounce-slow 3s infinite ease-in-out; }
+    select option { background: #050b1d; color: white; }
+    input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+</style>   
     <section id="library" class="py-16 bg-emerald-950 text-white">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-end mb-10">
@@ -575,7 +1199,73 @@ window.applyHeight = () => {
         window.generatePDF = () => html2pdf().from(document.getElementById('report-area')).save('CarbonHero_Report.pdf');
 
         loadData();
+        function calculateFinal() {
+    // ១. ទាញយកតម្លៃ
+    const treePower = parseFloat(document.getElementById('treePowerInput').value) || 0; 
+    const people = parseFloat(document.getElementById('peopleInput').value) || 0;
+    const days = parseInt(document.getElementById('timeRange').value);
+
+    // ២. ការគណនា
+    const totalAbsorb = treePower * days; 
+    const totalRelease = (people * 0.9) * days; 
+    const balance = totalAbsorb - totalRelease;
+
+    // ៣. បង្ហាញលទ្ធផល
+    document.getElementById('resultDisplay').classList.remove('hidden');
+    document.getElementById('totalIn').innerText = totalAbsorb.toLocaleString() + " kg";
+    document.getElementById('totalOut').innerText = totalRelease.toLocaleString() + " kg";
+    
+    const balElement = document.getElementById('finalBalance');
+    balElement.innerText = (balance > 0 ? "+" : "") + balance.toLocaleString() + " kg";
+
+    // ៤. បញ្ជាសំឡេង និង UI
+    const bird = document.getElementById('birdSound');
+    const alarm = document.getElementById('alarmSound');
+
+    // ឈប់សំឡេងទាំងអស់សិនមុននឹងបន្លឺថ្មី
+    bird.pause(); bird.currentTime = 0;
+    alarm.pause(); alarm.currentTime = 0;
+
+    if (balance < 0) {
+        // លទ្ធផលអវិជ្ជមាន៖ បន្លឺសំឡេងអាសន្ន
+        alarm.play();
+        updateUI_Negative(balance, days, treePower);
+    } else {
+        // លទ្ធផលវិជ្ជមាន៖ បន្លឺសំឡេងបក្សីយំ
+        bird.play();
+        updateUI_Positive(balance, days);
+    }
+}
+
+// បំបែក Function UI ឱ្យស្រួលមើល
+function updateUI_Negative(balance, days, treePower) {
+    const amountOver = Math.abs(balance);
+    const treesNeeded = Math.ceil(amountOver / (treePower * days)); 
+    
+    document.getElementById('impactTitle').innerText = "បរិយាកាសមានគ្រោះថ្នាក់!";
+    document.getElementById('impactTitle').className = "text-xl font-black text-red-500 italic uppercase";
+    document.getElementById('pandaIcon').innerText = "🌋";
+    document.getElementById('impactDetail').innerHTML = `
+        លើសកាបូន <b>${amountOver.toFixed(2)} kg</b>។<br>
+        <div class="mt-3 p-3 bg-red-500/20 rounded-xl border-l-4 border-red-500">
+            🌳 អនុសាសន៍៖ ត្រូវដាំដើមឈើបន្ថែម <b>${treesNeeded} ដើម</b> ទៀត!
+        </div>`;
+    document.getElementById('balanceContainer').className = "p-6 rounded-3xl border border-red-500 bg-red-500/10 text-center";
+}
+
+function updateUI_Positive(balance, days) {
+    document.getElementById('impactTitle').innerText = "បរិយាកាសមានសុវត្ថិភាព!";
+    document.getElementById('impactTitle').className = "text-xl font-black text-green-400 italic uppercase";
+    document.getElementById('pandaIcon').innerText = "🐼";
+    document.getElementById('impactDetail').innerHTML = "អស្ចារ្យ! សមត្ថភាពស្រូបគឺលើសពីការបញ្ចេញ។ ផែនដីកំពុងញញឹមជាមួយអ្នក!";
+    document.getElementById('balanceContainer').className = "p-6 rounded-3xl border border-green-500 bg-green-500/10 text-center";
+}
+
     </script>
+    
+    <audio id="birdSound" src="https://www.soundjay.com/nature/sounds/forest-birds-01.mp3"></audio>
+<audio id="alarmSound" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3"></audio>
+
 </body>
 </html>
 
