@@ -12,21 +12,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-       <script src="https://js.puter.com/v2/"></script>
-
-    <script>
-
-        puter.ai.chat("What are the major differences between renewable and non-renewable energy sources?", {
-
-            model: 'gemini-3.1-pro-preview'
-
-        }).then(response => {
-
-            puter.print(response);
-
-        });
-
-    </script>
+      
 
     <style>
         /* បន្ថែមក្នុង <style> */
@@ -724,195 +710,7 @@ window.applyHeight = () => {
         </div>
     </div>
 </section>
-<section class="py-16 bg-[#f8fafc] font-sans">
-    <div class="max-w-2xl mx-auto px-6">
-        
-        <div class="bg-white rounded-[3rem] shadow-[0_25px_60px_rgba(0,0,0,0.08)] overflow-hidden border border-gray-100">
-            
-            <div class="pt-12 pb-8 flex flex-col items-center">
-                <div class="relative">
-                    <div class="w-28 h-28 bg-[#ecfdf5] rounded-full flex items-center justify-center border-4 border-white shadow-md">
-                        <span class="text-6xl animate-bounce-slow">🐼</span>
-                    </div>
-                    <div class="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-4 border-white rounded-full">
-                        <span class="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75"></span>
-                    </div>
-                </div>
-                <h2 class="mt-4 text-2xl font-black text-gray-800 tracking-tight">Panda AI Assistant</h2>
-                <div class="flex items-center gap-2 mt-1">
-                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-                    <p class="text-gray-400 text-[10px] font-bold uppercase tracking-[0.2em]">Ultra-Fast Gemini 1.5 Flash</p>
-                </div>
-            </div>
 
-            <div id="chatBody" class="px-8 py-4 h-[350px] overflow-y-auto space-y-4 bg-gray-50/50">
-                <div class="flex justify-start">
-                    <div class="bg-white border border-gray-100 text-gray-700 px-5 py-3 rounded-2xl rounded-tl-none shadow-sm max-w-[85%] text-sm">
-                        សួស្តី! ខ្ញុំគឺ **Panda AI**។ តើអ្នកមានសំណួរអ្វីចង់សួរខ្ញុំអំពីបរិស្ថានដែរឬទេ? ខ្ញុំនឹងឆ្លើយតបអ្នកភ្លាមៗ!
-                    </div>
-                </div>
-            </div>
-
-            <div class="px-8 py-6 grid grid-cols-1 gap-3 bg-white">
-                <button onclick="quickAsk('តើដើមឈើជួយអ្វីខ្លះដល់ភពផែនដី?')" class="w-full text-left bg-white border border-gray-100 hover:border-green-500 hover:bg-green-50 px-6 py-4 rounded-2xl text-sm text-gray-700 transition-all flex justify-between items-center group shadow-sm">
-                    <span class="font-medium tracking-tight text-gray-600">🌳 តើដើមឈើជួយអ្វីខ្លះដល់ភពផែនដី?</span>
-                    <i class="fas fa-chevron-right text-gray-300 group-hover:text-green-500 transition-colors"></i>
-                </button>
-                <button onclick="quickAsk('តើធ្វើដូចម្តេចដើម្បីឱ្យបរិយាកាសស្អាត?')" class="w-full text-left bg-white border border-gray-100 hover:border-green-500 hover:bg-green-50 px-6 py-4 rounded-2xl text-sm text-gray-700 transition-all flex justify-between items-center group shadow-sm">
-                    <span class="font-medium tracking-tight text-gray-600">✨ តើធ្វើដូចម្តេចដើម្បីឱ្យបរិយាកាសស្អាត?</span>
-                    <i class="fas fa-chevron-right text-gray-300 group-hover:text-green-500 transition-colors"></i>
-                </button>
-            </div>
-
-            <div class="px-8 pb-10 bg-white">
-                <div class="relative flex items-center">
-                    <input type="text" id="aiInput" placeholder="សរសេរសំណួររបស់អ្នកនៅទីនេះ..." 
-                        class="w-full bg-gray-100 border-none rounded-2xl px-6 py-4 text-sm outline-none focus:ring-2 focus:ring-green-500/20 transition-all">
-                    <button onclick="sendToPandaAI()" class="absolute right-2.5 bg-green-500 hover:bg-green-600 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-md active:scale-90">
-                        <i class="fas fa-paper-plane text-[12px]"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<script src="https://js.puter.com/v2/"></script>
-
-<style>
-    @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-    .animate-bounce-slow { animation: bounce-slow 3s infinite ease-in-out; }
-    #chatBody::-webkit-scrollbar { width: 4px; }
-    #chatBody::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-</style>
-
-<script>
-    async function sendToPandaAI(customMsg = null) {
-        const inputField = document.getElementById('aiInput');
-        const chatBody = document.getElementById('chatBody');
-        const userMessage = customMsg || inputField.value.trim();
-
-        if (!userMessage) return;
-
-        // បង្ហាញសារអ្នកប្រើប្រាស់
-        chatBody.innerHTML += `
-            <div class="flex justify-end mb-4">
-                <div class="bg-green-500 text-white px-5 py-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-md text-sm">
-                    ${userMessage}
-                </div>
-            </div>`;
-        
-        inputField.value = "";
-        chatBody.scrollTop = chatBody.scrollHeight;
-
-        // បង្ហាញ Loading
-        const typingId = "typing-" + Date.now();
-        chatBody.innerHTML += `
-            <div id="${typingId}" class="flex justify-start mb-4">
-                <div class="bg-white border border-gray-100 text-green-600 px-5 py-2 rounded-2xl rounded-tl-none text-[11px] font-bold italic animate-pulse">
-                    Panda AI កំពុងគិតយ៉ាងលឿន...
-                </div>
-            </div>`;
-        chatBody.scrollTop = chatBody.scrollHeight;
-
-        try {
-            // កំណត់ឱ្យប្រើ Gemini 1.5 Flash តាមរយៈ Puter
-            puter.ai.chat("You are Panda AI, a super-fast environmental expert. Always answer in Khmer. Use emojis. Question: " + userMessage, { 
-                model: 'gemini-1.5-flash',
-                stream: false 
-            }).then(response => {
-                const typingElem = document.getElementById(typingId);
-                if (typingElem) typingElem.remove();
-
-                // បង្ហាញចម្លើយពី AI
-                chatBody.innerHTML += `
-                    <div class="flex justify-start mb-4">
-                        <div class="bg-white border-l-4 border-l-green-500 border border-gray-100 text-gray-700 px-5 py-3 rounded-2xl rounded-tl-none max-w-[88%] shadow-sm text-sm leading-relaxed">
-                            ${response}
-                        </div>
-                    </div>`;
-                chatBody.scrollTop = chatBody.scrollHeight;
-            });
-
-        } catch (error) {
-            document.getElementById(typingId).innerText = "សុំទោស មានកំហុសបច្ចេកទេស!";
-        }
-    }
-
-    function quickAsk(text) { sendToPandaAI(text); }
-
-    document.getElementById('aiInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendToPandaAI();
-    });
-</script>
-
-<script>
-    // អនុគមន៍បញ្ជូនសំណួរទៅកាន់ Gemini តាមរយៈ Puter.js
-    async function sendToPandaAI(customMsg = null) {
-        const inputField = document.getElementById('aiInput');
-        const chatBody = document.getElementById('chatBody');
-        const userMessage = customMsg || inputField.value.trim();
-
-        if (!userMessage) return;
-
-        // បង្ហាញសាររបស់អ្នកប្រើ
-        chatBody.innerHTML += `
-            <div class="flex justify-end mb-5 animate-in">
-                <div class="bg-green-500 text-white px-5 py-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-md text-sm font-medium">
-                    ${userMessage}
-                </div>
-            </div>`;
-        
-        inputField.value = "";
-        chatBody.scrollTop = chatBody.scrollHeight;
-
-        // បង្ហាញ Loading Status
-        const typingId = "typing-" + Date.now();
-        chatBody.innerHTML += `
-            <div id="${typingId}" class="flex justify-start mb-5 animate-in">
-                <div class="bg-white border border-gray-100 text-green-500 px-5 py-2 rounded-2xl rounded-tl-none text-[11px] font-black italic flex items-center gap-2 shadow-sm">
-                    <i class="fas fa-magic-wand-sparkles animate-spin"></i> Gemini កំពុងឆ្លើយតបយ៉ាងរហ័ស...
-                </div>
-            </div>`;
-        chatBody.scrollTop = chatBody.scrollHeight;
-
-        try {
-            // កំណត់ឱ្យវាឆ្លើយតបជាភាសាខ្មែរ និងមានលក្ខណៈរួសរាយ
-            const systemContext = "You are Panda AI, a helpful environmental expert. Always answer in Khmer with friendly emojis. Keep answers clear and concise. User asks: ";
-            
-            // ហៅប្រើ Puter AI ជាមួយ Gemini 1.5 Flash (Model លឿនបំផុត)
-            puter.ai.chat(systemContext + userMessage, { 
-                model: 'gemini-1.5-flash',
-                stream: false 
-            }).then(response => {
-                const typingElem = document.getElementById(typingId);
-                if (typingElem) typingElem.remove();
-
-                // បង្ហាញចម្លើយ AI
-                chatBody.innerHTML += `
-                    <div class="flex justify-start mb-5 animate-in">
-                        <div class="bg-white border-l-4 border-l-green-500 border border-gray-100 text-gray-700 px-5 py-4 rounded-2xl rounded-tl-none max-w-[88%] shadow-sm text-sm leading-relaxed">
-                            ${response}
-                        </div>
-                    </div>`;
-                chatBody.scrollTop = chatBody.scrollHeight;
-            });
-
-        } catch (error) {
-            const typingElem = document.getElementById(typingId);
-            if (typingElem) typingElem.innerText = "សុំទោស មានកំហុសបច្ចេកទេស!";
-            console.error(error);
-        }
-    }
-
-    function quickAsk(text) { sendToPandaAI(text); }
-
-    // ចាប់យកប៊ូតុង Enter
-    document.getElementById('aiInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendToPandaAI();
-    });
-</script>
 
 <style>
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
@@ -996,7 +794,68 @@ function downloadReport() {
     });
 }
 </script>
+<section class="py-8 font-sans">
+    <div class="max-w-md mx-auto px-4">
+        <div class="bg-white rounded-[2rem] shadow-2xl border border-gray-100 overflow-hidden">
+            <div class="p-4 text-center bg-gray-50/50">
+                <span class="text-4xl">🐼</span>
+                <h3 class="text-sm font-black text-gray-800 uppercase tracking-tighter">Panda Ultra Fast</h3>
+            </div>
 
+            <div id="chatBody" class="p-5 h-[250px] overflow-y-auto space-y-3 bg-white text-sm">
+                <div class="text-gray-400 italic text-[10px]">System: Gemini 1.5 Flash (Turbo) is Ready.</div>
+            </div>
+
+            <div class="p-4 border-t border-gray-50">
+                <div class="relative flex items-center bg-gray-100 rounded-full px-2">
+                    <input type="text" id="aiInput" placeholder="សួរមក..." 
+                        class="w-full bg-transparent border-none py-3 px-3 outline-none text-sm">
+                    <button onclick="go()" class="bg-green-500 text-white w-10 h-10 rounded-full flex items-center justify-center active:scale-75 transition-all">
+                        <i class="fas fa-bolt text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://js.puter.com/v2/"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<script>
+    // មុខងារនេះលឿនបំផុតព្រោះវាប្រើ Streaming និង Prompt ខ្លីបំផុត
+    async function go() {
+        const i = document.getElementById('aiInput'), b = document.getElementById('chatBody');
+        const v = i.value.trim(); if(!v) return;
+
+        // បង្ហាញសារអ្នកប្រើភ្លាម
+        b.innerHTML += `<div class="flex justify-end"><div class="bg-green-500 text-white p-2 px-4 rounded-2xl rounded-tr-none shadow-sm">${v}</div></div>`;
+        i.value = "";
+        b.scrollTop = b.scrollHeight;
+
+        // បង្កើតប្រអប់ទទួលអក្សរ
+        const id = "r" + Date.now();
+        b.innerHTML += `<div class="flex justify-start"><div id="${id}" class="bg-gray-100 p-2 px-4 rounded-2xl rounded-tl-none text-gray-700">...</div></div>`;
+        
+        try {
+            const el = document.getElementById(id);
+            let full = "";
+            
+            // ហៅ Gemini 1.5 Flash ក្នុង Mode Streaming
+            const s = await puter.ai.chat(v, { model: 'gemini-1.5-flash', stream: true });
+
+            el.innerText = ""; // លុប Loading ចេញភ្លាមពេល AI ចាប់ផ្ដើមឆ្លើយ
+            for await (const p of s) {
+                if (p?.text) {
+                    full += p.text;
+                    el.innerText = full; // អក្សររត់ចេញមកម្ដងមួយៗតាមល្បឿនខួរក្បាល AI
+                    b.scrollTop = b.scrollHeight;
+                }
+            }
+        } catch(e) { document.getElementById(id).innerText = "Error!"; }
+    }
+    document.getElementById('aiInput').onkeydown = (e) => { if(e.key === 'Enter') go(); };
+</script>
 <style>
     .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); }
     .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
