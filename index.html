@@ -845,29 +845,26 @@ function downloadReport() {
     if (!val) return;
 
     // ១. បង្ហាញសារអ្នកប្រើ
-    body.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-green-600 text-white p-3 px-5 rounded-2xl rounded-tr-none shadow-md text-sm">${val}</div></div>`;
+    body.innerHTML += `<div class="flex justify-end mb-4 animate-slide-up"><div class="bg-green-600 text-white p-3 px-5 rounded-2xl rounded-tr-none shadow-md text-sm">${val}</div></div>`;
     input.value = "";
     body.scrollTop = body.scrollHeight;
 
     // ២. បង្ហាញ Loading
     const tid = "t-" + Date.now();
-    body.innerHTML += `<div id="${tid}" class="flex justify-start mb-4"><div class="bg-white border border-gray-100 p-3 px-5 rounded-2xl rounded-tl-none shadow-sm text-green-600 text-xs italic font-bold flex items-center gap-2">Panda កំពុងឆ្លើយ...</div></div>`;
+    body.innerHTML += `<div id="${tid}" class="flex justify-start mb-4 animate-slide-up"><div class="bg-white border border-gray-100 p-3 px-5 rounded-2xl rounded-tl-none shadow-sm text-green-600 text-xs italic font-bold flex items-center gap-2"><i class="fas fa-circle-notch animate-spin"></i> Panda កំពុងឆ្លើយ...</div></div>`;
     body.scrollTop = body.scrollHeight;
 
     try {
-        // ប្រើ Puter AI ជាមួយម៉ូដែល Flash (លឿនបំផុត)
-        // វានឹងលោតផ្ទាំងតូចមួយឱ្យអ្នកចុច "Allow" តែម្ដងគត់
-        const response = await puter.ai.chat("You are Panda AI. Answer in Khmer concisely: " + val, { 
-            model: 'gemini-1.5-flash' 
-        });
+        // ប្រើ puter.ai.chat ជំនាន់ចុងក្រោយ
+        // ប្រសិនបើវាអត់លោត Verify ទេ កូដនេះនឹងព្យាយាមហៅ AI ដោយស្វ័យប្រវត្តិ
+        const response = await puter.ai.chat(val, { model: 'gemini-1.5-flash' });
 
-        // ត្រួតពិនិត្យចម្លើយ
         const loadingElem = document.getElementById(tid);
         if (loadingElem) loadingElem.remove();
 
+        // ៣. បង្ហាញចម្លើយ (Handle ទាំង Object និង String)
         const aiText = response.message ? response.message.content : response;
 
-        // ៣. បង្ហាញចម្លើយ AI
         body.innerHTML += `
             <div class="flex justify-start mb-4 animate-slide-up">
                 <div class="bg-white border-l-4 border-green-500 border border-gray-100 p-4 rounded-2xl rounded-tl-none shadow-sm text-gray-700 text-sm leading-relaxed max-w-[90%]">
@@ -879,9 +876,9 @@ function downloadReport() {
     } catch (error) {
         const loadingElem = document.getElementById(tid);
         if (loadingElem) {
-            loadingElem.innerHTML = "<span class='text-red-500 text-[10px]'>សូមចុច 'Allow' ឬ 'Verify' ក្នុងផ្ទាំងដែលលោតចេញមក។</span>";
+            loadingElem.innerHTML = "<span class='text-red-500 text-[10px]'>កំហុស៖ សូម Refresh Page រួចព្យាយាមម្ដងទៀត។</span>";
         }
-        console.error("Error:", error);
+        console.error("Puter Error:", error);
     }
 }</script>
 
