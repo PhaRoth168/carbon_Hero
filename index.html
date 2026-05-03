@@ -837,77 +837,53 @@ function downloadReport() {
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-<script>
-    async function askPanda() {
-        const input = document.getElementById('aiInput');
-        const body = document.getElementById('chatBody');
-        const val = input.value.trim();
-        
-        if (!val) return;
+<script>async function askPanda() {
+    const input = document.getElementById('aiInput');
+    const body = document.getElementById('chatBody');
+    const val = input.value.trim();
+    
+    if (!val) return;
 
-        // ១. បង្ហាញសារអ្នកប្រើភ្លាម
+    // ១. បង្ហាញសារអ្នកប្រើ
+    body.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-green-600 text-white p-3 px-5 rounded-2xl rounded-tr-none shadow-md text-sm">${val}</div></div>`;
+    input.value = "";
+    body.scrollTop = body.scrollHeight;
+
+    // ២. បង្ហាញ Loading
+    const tid = "t-" + Date.now();
+    body.innerHTML += `<div id="${tid}" class="flex justify-start mb-4"><div class="bg-white border border-gray-100 p-3 px-5 rounded-2xl rounded-tl-none shadow-sm text-green-600 text-xs italic font-bold flex items-center gap-2">Panda កំពុងឆ្លើយ...</div></div>`;
+    body.scrollTop = body.scrollHeight;
+
+    try {
+        // ប្រើ Puter AI ជាមួយម៉ូដែល Flash (លឿនបំផុត)
+        // វានឹងលោតផ្ទាំងតូចមួយឱ្យអ្នកចុច "Allow" តែម្ដងគត់
+        const response = await puter.ai.chat("You are Panda AI. Answer in Khmer concisely: " + val, { 
+            model: 'gemini-1.5-flash' 
+        });
+
+        // ត្រួតពិនិត្យចម្លើយ
+        const loadingElem = document.getElementById(tid);
+        if (loadingElem) loadingElem.remove();
+
+        const aiText = response.message ? response.message.content : response;
+
+        // ៣. បង្ហាញចម្លើយ AI
         body.innerHTML += `
-            <div class="flex justify-end mb-4 animate-slide-up">
-                <div class="bg-green-600 text-white p-3 px-5 rounded-2xl rounded-tr-none shadow-md text-sm font-medium">
-                    ${val}
+            <div class="flex justify-start mb-4 animate-slide-up">
+                <div class="bg-white border-l-4 border-green-500 border border-gray-100 p-4 rounded-2xl rounded-tl-none shadow-sm text-gray-700 text-sm leading-relaxed max-w-[90%]">
+                    ${aiText}
                 </div>
             </div>`;
-        
-        input.value = "";
         body.scrollTop = body.scrollHeight;
 
-        // ២. បង្ហាញ Loading State
-        const tid = "t-" + Date.now();
-        body.innerHTML += `
-            <div id="${tid}" class="flex justify-start mb-4 animate-slide-up">
-                <div class="bg-white border border-gray-100 p-3 px-5 rounded-2xl rounded-tl-none shadow-sm text-green-600 text-xs italic font-bold flex items-center gap-2">
-                    <i class="fas fa-circle-notch animate-spin"></i> Panda កំពុងឆ្លើយតប...
-                </div>
-            </div>`;
-        body.scrollTop = body.scrollHeight;
-
-        try {
-            // ប្រើ API Key ដែលអ្នកបានផ្ដល់ឱ្យ
-            const apiKey = 'hJ3SKvViNa3xQfdq9n6oiZruPVjqq6P66JaijlZe'; 
-            
-            const response = await fetch('https://api.cohere.ai/v1/chat', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: "You are Panda AI, an environmental expert. Answer in Khmer very concisely and use emojis: " + val,
-                    model: 'command-r-plus'
-                })
-            });
-
-            const data = await response.json();
-            
-            // លុប Loading
-            const loadingElem = document.getElementById(tid);
-            if (loadingElem) loadingElem.remove();
-
-            // ៣. បង្ហាញចម្លើយ AI
-            body.innerHTML += `
-                <div class="flex justify-start mb-4 animate-slide-up">
-                    <div class="bg-white border-l-4 border-green-500 border border-gray-100 p-4 rounded-2xl rounded-tl-none shadow-sm text-gray-700 text-sm leading-relaxed max-w-[90%]">
-                        ${data.text}
-                    </div>
-                </div>`;
-            body.scrollTop = body.scrollHeight;
-
-        } catch (error) {
-            const loadingElem = document.getElementById(tid);
-            if (loadingElem) loadingElem.innerHTML = "<span class='text-red-500 text-xs'>កំហុសបច្ចេកទេស! សូមព្យាយាមម្ដងទៀត។</span>";
+    } catch (error) {
+        const loadingElem = document.getElementById(tid);
+        if (loadingElem) {
+            loadingElem.innerHTML = "<span class='text-red-500 text-[10px]'>សូមចុច 'Allow' ឬ 'Verify' ក្នុងផ្ទាំងដែលលោតចេញមក។</span>";
         }
+        console.error("Error:", error);
     }
-
-    // Enter Key Support
-    document.getElementById('aiInput').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') askPanda();
-    });
-</script>
+}</script>
 
 <style>
     /* ចលនា Panda លោតតិចៗ */
