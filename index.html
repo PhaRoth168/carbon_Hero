@@ -680,7 +680,7 @@
                         Eco-Balance Simulator
                     </h2>
                     <p class="text-slate-500 text-xs font-mono tracking-widest uppercase mt-2">
-                        ប្រព័ន្ធវាស់ស្ទង់តុល្យភាពបរិយាកាស • FINAL VERSION
+                        ប្រភពវាស់ស្ទង់តុល្យភាពបរិយាកាស • FINAL VERSION
                     </p>
                 </div>
                 <div class="flex gap-2">
@@ -734,9 +734,24 @@
                     </div>
                 </div>
 
+                <div class="p-6 rounded-3xl bg-slate-950/60 border border-cyan-500/10 font-mono text-xs text-slate-400 space-y-3 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-cyan-500/10 text-cyan-400 text-[9px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-widest">
+                        Math Process
+                    </div>
+                    <h5 class="text-sm font-bold text-slate-300 mb-2 flex items-center gap-2">
+                        <span>🧮</span> ក្ដារខៀនវិភាគគណនាលេខ (Formula Dashboard)
+                    </h5>
+                    <div class="space-y-1.5 border-l-2 border-slate-800 pl-3">
+                        <p>🌿 <span class="text-green-400">ការស្រូបរបស់ឈើ:</span> (<span id="boardTreeInput">0</span> kg ÷ 365 ថ្ងៃ) × <span id="boardDays1">0</span> ថ្ងៃ = <span id="boardTreeResult" class="text-green-400 font-bold">0.00 kg</span></p>
+                        <p>💨 <span class="text-red-400">ការបញ្ចេញរបស់មនុស្ស:</span> <span id="boardPeople">0</span> នាក់ × 0.9 kg × <span id="boardDays2">0</span> ថ្ងៃ = <span id="boardPeopleResult" class="text-red-400 font-bold">0.00 kg</span></p>
+                        <hr class="border-white/5 my-2">
+                        <p class="text-sm">⚖️ <span class="text-white">រូបមន្តតុល្យភាព:</span> <span class="text-green-400">ស្រូបសរុប</span> - <span class="text-red-400">បញ្ចេញសរុប</span> = <span id="boardFinalResult" class="font-black text-white">0.00 kg</span></p>
+                    </div>
+                </div>
+
                 <div id="impactMessage" class="relative p-8 rounded-[3rem] bg-white/5 border border-white/10 overflow-hidden">
                     <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
-                        <div class="w-32 h-32 bg-white/10 rounded-full flex items-center justify-center text-6xl animate-bounce-slow" id="pandaIcon">
+                        <div class="w-32 h-32 bg-white/10 rounded-full flex items-center justify-center text-6xl" id="pandaIcon">
                             🐼
                         </div>
                         <div class="text-center md:text-left flex-1">
@@ -746,10 +761,85 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </section>
 
+<script>
+    function calculateFinal() {
+        // ១. ទាញយកតម្លៃពី Inputs
+        const treeCapacityYearly = parseFloat(document.getElementById('treePowerInput').value) || 0;
+        const peopleCount = parseFloat(document.getElementById('peopleInput').value) || 0;
+        const days = parseInt(document.getElementById('timeRange').value) || 1;
+
+        const resultDisplay = document.getElementById('resultDisplay');
+        const totalInEl = document.getElementById('totalIn');
+        const totalOutEl = document.getElementById('totalOut');
+        const finalBalanceEl = document.getElementById('finalBalance');
+        const balanceContainer = document.getElementById('balanceContainer');
+        
+        const pandaIcon = document.getElementById('pandaIcon');
+        const impactTitle = document.getElementById('impactTitle');
+        const impactDetail = document.getElementById('impactDetail');
+
+        // ២. គណនាតាមរូបមន្តវិទ្យាសាស្ត្រ
+        const totalAbsorption = (treeCapacityYearly / 365) * days;
+        const CO2_PER_HUMAN_DAILY = 0.9; // មនុស្សម្នាក់ដកដង្ហើមបញ្ចេញកាបូន 0.9 kg ក្នុងមួយថ្ងៃ
+        const totalEmission = peopleCount * CO2_PER_HUMAN_DAILY * days;
+        const balance = totalAbsorption - totalEmission;
+
+        // ៣. បង្ហាញផ្ទាំងលទ្ធផល
+        resultDisplay.classList.remove('hidden');
+
+        // ៤. ចាក់បំពេញទិន្នន័យចូលទៅក្នុងកាតលទ្ធផលចម្បងទាំង៣
+        totalInEl.innerText = `${totalAbsorption.toFixed(2)} kg`;
+        totalOutEl.innerText = `${totalEmission.toFixed(2)} kg`;
+        const sign = balance > 0 ? "+" : "";
+        finalBalanceEl.innerText = `${sign}${balance.toFixed(2)} kg`;
+
+        // ៥. 🎯 ចាក់បំពេញលេខបង្ហាញនៅលើ "ក្ដារខៀនគណនា" លម្អិត (Blackboard Updates)
+        document.getElementById('boardTreeInput').innerText = treeCapacityYearly;
+        document.getElementById('boardDays1').innerText = days;
+        document.getElementById('boardDays2').innerText = days;
+        document.getElementById('boardPeople').innerText = peopleCount;
+        
+        document.getElementById('boardTreeResult').innerText = `${totalAbsorption.toFixed(2)} kg`;
+        document.getElementById('boardPeopleResult').innerText = `${totalEmission.toFixed(2)} kg`;
+        document.getElementById('boardFinalResult').innerText = `${sign}${balance.toFixed(2)} kg`;
+
+        // ៦. ប្ដូរពណ៌ប្រអប់តុល្យភាព និងបង្ហាញសាររៀបរាប់តាមលក្ខខណ្ឌជាក់ស្តែង
+        if (balance > 0) {
+            balanceContainer.className = "p-6 rounded-3xl border text-center transition-all duration-500 bg-emerald-500/10 border-emerald-500/40 text-emerald-400";
+            document.getElementById('boardFinalResult').className = "font-black text-emerald-400";
+            
+            pandaIcon.innerText = "🐼💚";
+            impactTitle.className = "text-xl font-black mb-2 italic uppercase text-emerald-400";
+            impactTitle.innerText = "Ecosystem is Safe! / បរិយាកាសមានសុវត្ថិភាព";
+            impactDetail.innerText = `ដើមឈើរបស់អ្នកមានសមត្ថភាពគ្រប់គ្រាន់ក្នុងការសម្អាតខ្យល់អាកាស! បរិមាណកាបូនដែលមនុស្សបញ្ចេញត្រូវបានស្រូបយកទៅវិញទាំងស្រុង និងសល់ផ្ទៃខ្យល់បរិសុទ្ធចំនួន ${balance.toFixed(2)} kg សម្រាប់ទ្រទ្រង់ភពផែនដីក្នុងរយៈពេលដែលបានគណនានេះ។`;
+        } else if (balance < 0) {
+            balanceContainer.className = "p-6 rounded-3xl border text-center transition-all duration-500 bg-red-500/10 border-red-500/40 text-red-400";
+            document.getElementById('boardFinalResult').className = "font-black text-red-400";
+            
+            pandaIcon.innerText = "🚨";
+            impactTitle.className = "text-xl font-black mb-2 italic uppercase text-red-400";
+            impactTitle.innerText = "Carbon Surplus! / កាបូនលើសចំណុះ";
+            impactDetail.innerText = `អាសន្នហើយ! សមត្ថភាពរបស់ដើមឈើមិនអាចស្រូបយកកាបូនដែលមនុស្សបញ្ចេញបានទាន់ពេលនោះទេ។ មានកាបូនដែលនៅសេសសល់អណ្តែតក្នុងបរិយាកាសចំនួន ${Math.abs(balance).toFixed(2)} kg ដែលបង្កជាកម្តៅ និងការបំពុល។ ដាំដើមឈើបន្ថែម ឬបង្កើនសមត្ថភាពស្រូបជាបន្ទាន់!`;
+        } else {
+            balanceContainer.className = "p-6 rounded-3xl border text-center transition-all duration-500 bg-cyan-500/10 border-cyan-500/40 text-cyan-400";
+            document.getElementById('boardFinalResult').className = "font-black text-cyan-400";
+            
+            pandaIcon.innerText = "⚖️";
+            impactTitle.className = "text-xl font-black mb-2 italic uppercase text-cyan-400";
+            impactTitle.innerText = "Perfect Equilibrium / តុល្យភាពឥតខ្ចោះ";
+            impactDetail.innerText = "អស្ចារ្យណាស់! ប្រប្រព័ន្ធអេកូឡូស៊ីរបស់អ្នកស្ថិតក្នុងស្ថានភាពមានតុល្យភាពល្អឥតខ្ចោះ (Net-Zero)។ បរិមាណនៃការស្រូប និងការបញ្ចេញគឺស្មើគ្នាទាំងស្រុង។";
+        }
+    }
+
+    function downloadReport() {
+        alert("📸 ប្រព័ន្ធកំពុងរៀបចំទាញយករបាយការណ៍ក្លែងធ្វើ (Simulator Report)...");
+    }
+</script>
 
 <style>
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
